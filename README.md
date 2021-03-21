@@ -1,1 +1,1 @@
-# CISC499_LGP
+# CISC499 Compact and Interpretable Predictive Models for Linear Genetic Programming
