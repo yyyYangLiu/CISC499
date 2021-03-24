@@ -1,3 +1,16 @@
+'''
+Testing for
+2.constant folding
+4.eliminating subexpression
+
+Modification Notes:
+add assignment "r = 1" case in execute()
+delete print section in random_program()
+delete parameter "num" in execute()
+main() and testing(): use "label" for execute()
+
+Yanyu Yang
+'''
 # Test File
 # by Jinting Zhang
 # Assignment 5 - LGP program generation structural intron removal
@@ -81,7 +94,7 @@ def random_program(num, prog_length, totalLabel):
 
     # Print the LGP program as a list of instructions
     # An instruction should be printed as, for instance r1 = r3 + r0 or r2 = r0 * 5
-
+    '''
     print("The randomly generated LGP program is:")
     for i in range(0, prog_length):
         if len(program[i]) == 4:
@@ -93,6 +106,7 @@ def random_program(num, prog_length, totalLabel):
             print(program[i][0], "=", program[i][1], program[i][2])
         elif len(program[i]) == 2:
             print(program[i][0] + " " + program[i][1])
+    '''
     return program
 
 
@@ -245,22 +259,149 @@ def execute(program, prog_length, register_dic):
 
     return register_dic
 
+#------------------------------------------------
+def alge_opti(argu):
+  if len(argu)>=4:
+    if argu[0]==argu[2] and argu[3]=="+" and argu[4]=="0":
+      return None
+    if argu[0]==argu[2] and argu[3]=="*" and argu[4]=="1":
+      return None
+    if argu[3]=="*" and argu[4]=="0":
+      return argu[0]+argu[1]+argu[4]
+    if argu[3]=="**" and argu[4]=="2":
+      return argu[0]+argu[1]+argu[2]+"*"+argu[2]
+  return argu
 
-def main():
+def single_assign(argu_list):
+  # step 1 record repeated elem
+
+  # here argu_list is all the instructions and this is a 2-d list
+  left_list=[]
+  right_list=[]
+  # get all the LHS of instruction and put into argu_list
+  print(argu_list)
+  for i in range(len(argu_list)):
+    left_list.append(argu_list[i][0])
+
+  left_set=list(set(left_list))
+
+  num_len=len(left_set)
+  register_list=[]
+  # count number of elem and put result into register_list
+  # in this case register_list is [[[0, 3, 4],'x'], [[1, 2],'a']]
+  if num_len<len(left_list):
+    for i in range(num_len):
+      temp=[]
+      var=left_set[i]
+      num_elem=left_list.count(var)
+      if num_elem>1:
+        temp.append([j for j,x in enumerate(left_list) if x == var])
+        temp.append(var)
+        register_list.append(temp)
+  
+  # step 2 update 
+  # x and a
+  for i in range(len(register_list)):
+    var = register_list[i][1]
+    new_name=""
+    # change LHS x in 3 and 4 
+    for j in range(len(register_list[i][0])-1):
+      # take x for example, register_list[0][0] is [0,3,4],register_list[0][1] is 'x'    
+      # change LHS x in 3 and 4 
+      in_dex = register_list[i][0][j+1]
+      new_name = register_list[i][1]+str(j)
+      argu_list[in_dex][0]=new_name
+      
+      # change RHS, eg: all instructions (3,4] to x0， (4，end] to x1 , (2,end] to a0
+      if j+2 <= len(register_list[i][0])-1:
+        index_next=register_list[i][0][j+2]
+      else:
+        index_next=len(argu_list)-1
+      
+      for j in range(in_dex+1,index_next+1):
+        right_list= argu_list[j][1:]
+        for k in range(len(right_list)):
+          if right_list[k]==var:
+            argu_list[j][k+1]=new_name
+
+
+  return argu_list
+
+
+def copy_propagation(argu_list):
+    for i in range(len(argu_list)):
+        if argu_list[i][1]==":=" and len(argu_list[i])==3:
+            # replace all i[0] to i[2] in all the RHS of following instructions
+            for j in argu_list[i+1:]:
+                for k in range(len(j)):
+                    if k>0 and j[k]==argu_list[i][0]:
+                        j[k]=argu_list[i][2]
+    # call constant folding function here
+
+    # dead code elimination
+    temp_list=argu_list[:]
+    for i in range(len(temp_list)):
+      if temp_list[i][1]==":=" and len(temp_list[i])==3:
+        # replace all i[0] to i[2] in all the RHS of following instructions
+          for j in range(len(temp_list)):
+            if not(i!=j and (temp_list[i][0] in temp_list[j])):
+              #delete the basic block which is dead:
+              del argu_list[i]
+              break
+    return argu_list
+                    
+
+def transform(program):
+  new_ls=[] 
+  for i in range(len(program)): 
+    new_ls.append([])
+
+    if len(program[i]) == 5 and program[i][1]==":=":
+        new_ls[i]=[program[i][0], program[i][3], program[i][2], program[i][4]]
+    elif len(program[i]) == 4 and program[i][1]==":=": 
+        new_ls[i] = [program[i][0], program[i][2], program[i][3]]   
+    else:
+      new_ls[i] = program[i]
+  return new_ls
+                    
+def optimization(argu_list):
+  ls=[]
+  for i in range(len(argu_list)):
+    ls.append(alge_opti(argu_list[i]))
+
+  ls=single_assign(ls)
+
+  ls=copy_propagation(ls)
+
+  # after optimization, transform it
+  ls=transform(ls)
+  print("after transform",ls)
+  
+  return ls
+#------------------------------------------------
+
+
+def testing():
     max_prog_length = 6  # 6 instructions in total is the upper limit
     totalLabel = random.randint(1, 6)
     # generate program
+
+    
     dic_program = {}
     for i in range(totalLabel):
         prog_length = random.randint(1, max_prog_length)
         program = random_program(i, prog_length, totalLabel)
         label = "L" + str(i)
         dic_program[label] = program
-
+    '''
+    dic_program = {"L0": [["r0", "/", 0, 0]]}
+    '''
     # optimization process
     c = copy.deepcopy(dic_program)
+    #optimization(dic_program)
     constant_folding.general_constant_opti(dic_program)
     common_sub_elimination.general_sub_eliminate(dic_program)
+    
 
     #print
     print("\nOriginal Program:\n")# hard copy
@@ -283,5 +424,16 @@ def main():
         program = dic_program[label]
         execute(program, len(program), compare_dic)
     print("\nOptimiza result:", compare_dic)
+
+    return register_dic, compare_dic
+
+
+# compare the result
+def main():
+    for i in range(1):
+        register_dic, compare_dic = testing()
+        if register_dic == compare_dic:
+            print("\nThe results are the same!\n\n")
+            
 
 main()
