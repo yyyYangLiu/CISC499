@@ -1,4 +1,6 @@
 '''
+adapting
+
 Testing for
 2.constant folding
 4.eliminating subexpression
@@ -7,9 +9,8 @@ Modification Notes:
 add assignment "r = 1" case in execute()
 delete print section in random_program()
 delete parameter "num" in execute()
-main() and testing(): use "label" for execute()
+main() and testing(): use "label" for execute() YY
 
-Yanyu Yang
 '''
 # Test File
 # by Jinting Zhang
@@ -106,8 +107,29 @@ def random_program(num, prog_length, totalLabel):
             print(program[i][0], "=", program[i][1], program[i][2])
         elif len(program[i]) == 2:
             print(program[i][0] + " " + program[i][1])
-    '''
+    
     return program
+    '''
+    program_ls = []
+    #print("The randomly generated LGP program is:")
+    for i in range(0, prog_length):
+        program_ls.append([])
+        if len(program[i]) == 4:
+            if program[i][0] == 'if':
+                #print(program[i][0], program[i][1], program[i][2], program[i][3])
+                program_ls[i] = [program[i][0], program[i][1], program[i][2], program[i][3]]
+            else:
+                #print(program[i][0], "=", program[i][2], program[i][1], program[i][3])
+                program_ls[i] = [program[i][0], ":=", program[i][2], program[i][1], program[i][3]]
+        elif len(program[i]) == 3:
+            #print(program[i][0], "=", program[i][1], program[i][2])
+            program_ls[i] = [program[i][0], ":=", program[i][1], program[i][2]]
+        elif len(program[i]) == 2:
+            #print(program[i][0] + " " + program[i][1])
+            program_ls[i] = [program[i][0], " ", program[i][1]]
+
+
+    return program,program_ls
 
 
 # A function defined to test if-condition
@@ -303,31 +325,31 @@ def single_assign(argu_list):
   # x and a
   for i in range(len(register_list)):
     var = register_list[i][1]
-    new_name=""
-    # change LHS x in 3 and 4 
-    for j in range(len(register_list[i][0])-1):
-      # take x for example, register_list[0][0] is [0,3,4],register_list[0][1] is 'x'    
+    if var != "goto" and var != "if":
+      new_name=""
       # change LHS x in 3 and 4 
-      in_dex = register_list[i][0][j+1]
-      new_name = register_list[i][1]+str(j)
-      argu_list[in_dex][0]=new_name
-      
-      # change RHS, eg: all instructions (3,4] to x0， (4，end] to x1 , (2,end] to a0
-      if j+2 <= len(register_list[i][0])-1:
-        index_next=register_list[i][0][j+2]
-      else:
-        index_next=len(argu_list)-1
-      
-      for j in range(in_dex+1,index_next+1):
-        right_list= argu_list[j][1:]
-        for k in range(len(right_list)):
-          if right_list[k]==var:
-            argu_list[j][k+1]=new_name
+      for j in range(len(register_list[i][0])-1):
+        # take x for example, register_list[0][0] is [0,3,4],register_list[0][1] is 'x'    
+        # change LHS x in 3 and 4 
+        in_dex = register_list[i][0][j+1]
+        new_name = register_list[i][1]+str(j)
+        argu_list[in_dex][0]=new_name
+        
+        # change RHS, eg: all instructions (3,4] to x0， (4，end] to x1 , (2,end] to a0
+        if j+2 <= len(register_list[i][0])-1:
+          index_next=register_list[i][0][j+2]
+        else:
+          index_next=len(argu_list)-1
+        
+        for j in range(in_dex+1,index_next+1):
+          right_list= argu_list[j][1:]
+          for k in range(len(right_list)):
+            if right_list[k]==var:
+              argu_list[j][k+1]=new_name
 
 
   return argu_list
-
-
+  
 def copy_propagation(argu_list):
     for i in range(len(argu_list)):
         if argu_list[i][1]==":=" and len(argu_list[i])==3:
@@ -355,11 +377,12 @@ def transform(program):
   new_ls=[] 
   for i in range(len(program)): 
     new_ls.append([])
-
     if len(program[i]) == 5 and program[i][1]==":=":
         new_ls[i]=[program[i][0], program[i][3], program[i][2], program[i][4]]
     elif len(program[i]) == 4 and program[i][1]==":=": 
-        new_ls[i] = [program[i][0], program[i][2], program[i][3]]   
+        new_ls[i] = [program[i][0], program[i][2], program[i][3]] 
+    elif program[i][0] == "goto":
+        new_ls[i] = [program[i][0],program[i][2]]  
     else:
       new_ls[i] = program[i]
   return new_ls
@@ -375,32 +398,37 @@ def optimization(argu_list):
 
   # after optimization, transform it
   ls=transform(ls)
-  print("after transform",ls)
-  
+  #print("after transform",ls)
   return ls
+
 #------------------------------------------------
 
 
 def testing():
     max_prog_length = 6  # 6 instructions in total is the upper limit
     totalLabel = random.randint(1, 6)
-    # generate program
 
+    dic_program = {}#he
+    dic_copy={}#he
     
+    # generate program
     dic_program = {}
     for i in range(totalLabel):
         prog_length = random.randint(1, max_prog_length)
-        program = random_program(i, prog_length, totalLabel)
+        program, program_ls = random_program(i, prog_length, totalLabel)#he
         label = "L" + str(i)
         dic_program[label] = program
+
+        optim_program=optimization(program_ls)#he
+        dic_copy[label]=optim_program         #he
     '''
     dic_program = {"L0": [["r0", "/", 0, 0]]}
     '''
     # optimization process
+    # c = copy.deepcopy(dic_program)
     c = copy.deepcopy(dic_program)
-    #optimization(dic_program)
-    constant_folding.general_constant_opti(dic_program)
-    common_sub_elimination.general_sub_eliminate(dic_program)
+    constant_folding.general_constant_opti(dic_copy)
+    common_sub_elimination.general_sub_eliminate(dic_copy)
     
 
     #print
@@ -408,8 +436,8 @@ def testing():
     for i in c:
         print(i + " " + str(c[i]) + "\n")
     print("\nOptimization Program:\n")# dic_program
-    for i in dic_program:
-        print(i + " " + str(dic_program[i]) + "\n")
+    for i in dic_copy:
+        print(i + " " + str(dic_copy[i]) + "\n")
 
     # before
     register_dic = {'r0': 1.5, 'r1': 1.5, 'r2': 1.5, 'r3': 1.5, 'r4': 1.5}
@@ -420,8 +448,8 @@ def testing():
 
     # after
     compare_dic = {'r0': 1.5, 'r1': 1.5, 'r2': 1.5, 'r3': 1.5, 'r4': 1.5}
-    for label in dic_program:
-        program = dic_program[label]
+    for label in dic_copy:
+        program = dic_copy[label]
         execute(program, len(program), compare_dic)
     print("\nOptimiza result:", compare_dic)
 
@@ -430,7 +458,7 @@ def testing():
 
 # compare the result
 def main():
-    for i in range(1):
+    for i in range(3):
         register_dic, compare_dic = testing()
         if register_dic == compare_dic:
             print("\nThe results are the same!\n\n")
