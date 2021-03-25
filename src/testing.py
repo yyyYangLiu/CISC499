@@ -1,5 +1,5 @@
 # Test File
-# by Jinting Zhang
+# by Jinting/Jeanette Zhang
 
 import random
 import math
