@@ -1,5 +1,6 @@
 # Test File
-# by Jinting/Jeanette Zhang
+# by Jinting Zhang
+# Assignment 5 - LGP program generation structural intron removal
 
 import random
 import math
@@ -238,7 +239,10 @@ def execute(program, prog_length, register_dic):
                     program[i][2] = register_dic[program[i][2]]
                 if isinstance(program[i][3], str):
                     program[i][3] = register_dic[program[i][3]]
-                updateDic = {program[i][0]: program[i][2] ** program[i][3]}
+                try:
+                    updateDic = {program[i][0]: program[i][2] ** program[i][3]}
+                except:
+                    print("Math error: ZeroDivisionError: 0.0 cannot be raised to a negative power! ")
                 register_dic.update(updateDic)
             if program[i][1] == 'e':
                 if isinstance(program[i][2], str):
@@ -296,7 +300,7 @@ def testing():
         dic_copy[label] = optim_program  
         for i in new_name:          #he
           new_register.append(i)
-    print(new_register)
+    #print(new_register)
     
     # optimization process
     c = copy.deepcopy(dic_program)
