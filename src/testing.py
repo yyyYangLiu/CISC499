@@ -1,6 +1,5 @@
 # Test File
 # by Jinting Zhang
-# Assignment 5 - LGP program generation structural intron removal
 
 import random
 import math
