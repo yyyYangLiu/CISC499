@@ -5,6 +5,7 @@
 import random
 import math
 import copy
+import csv
 
 import opti1
 import opti2
@@ -300,20 +301,24 @@ def instruction_length(d):
 def result1(before, after):
     before_len = element_length(before)
     after_len = element_length(after)
+    '''
     print("\n1. The change of total element number :\n")
     print("The length of the original random program: ", before_len,"\n")
-    print("The length of the optimized program: ", after_len,"\n") 
-    return after_len / before_len
+    print("The length of the optimized program: ", after_len,"\n")
+    '''
+    return before_len, after_len, after_len / before_len
 
 
 # result for instruction reduction         
 def result2(before, after):
     before_len = instruction_length(before)
     after_len = instruction_length(after)
+    '''
     print("\n2. The change of instruction number (code lines):\n")
     print("The length of the original random program: ", before_len,"\n")
-    print("The length of the optimized program: ", after_len,"\n") 
-    return after_len / before_len
+    print("The length of the optimized program: ", after_len,"\n")
+    '''
+    return before_len, after_len, after_len / before_len
     
 
 def testing():
@@ -341,7 +346,8 @@ def testing():
     c = copy.deepcopy(dic_program)
     opti2.general_constant_opti(dic_copy)
     opti2.general_sub_eliminate(dic_copy)
-
+    
+    '''
     #print(dic_copy)
     print("\nOriginal Program:\n")              # hard copy
     for i in c:
@@ -349,6 +355,7 @@ def testing():
     print("\nOptimization Program:\n")          # dic_program
     for i in dic_copy:
         print(i + " " + str(dic_copy[i]) + "\n")
+    '''
 
     # before
     register_dic = {'r0': 1.5, 'r1': 1.5, 'r2': 1.5, 'r3': 1.5, 'r4': 1.5}
@@ -368,18 +375,73 @@ def testing():
     #print("\nOptimiza result:", compare_dic)
     #print(dic_program, dic_copy)
 
-    r1 = result1(dic_program, dic_copy)
-    print("The total elements are reduced by:", 100-r1*100, "%\n")
-    r2 = result2(dic_program, dic_copy)
-    print("The code lines (instruction number) are reduced by:", 100-r2*100, "%\n")
+
+    before1, after1, r1 = result1(dic_program, dic_copy)
+    before2, after2, r2 = result2(dic_program, dic_copy)
+    
+    rp1 = str(round(100-r1*100,2))+"%"
+    rp2 = str(round(100-r2*100,2))+"%"
+    d1 = before1 - after1
+    d2 = before2 - after2
+
+    #print("The total elements are reduced by:", rp1, "\n")
+    #print("The code lines (instruction number) are reduced by:", rp2, "\n")
+
+    return before1, after1, rp1, before2, after2, rp2, d1, d2
     
 
+
+# generate a table
+def chart(name, c):
+    with open(name, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerows(c)
+
+    
 # show the results
 def main():
-    testing_number = 2 # modify here to change the number of testing cases 
-    for i in range(testing_number):
-        print("\n\nTesting ", i+1, ":\n")
-        testing()            
 
+    chart1 = [["","Length of Original Program", "Length of Optimized Program", "Length Difference", "Reduction Percentage"]]
+    chart2 = [["","Length of Original Program", "Length of Optimized Program", "Length Difference", "Reduction Percentage"]]
+    
+    testing_number = 20 # modify here to change the number of testing cases 
+    for i in range(testing_number):
+        r1 = []
+        r2 = []
+
+        r1.append("Test"+str(i+1))
+        r2.append("Test"+str(i+1))
+        #print("\n\nTesting ", i+1, ":\n")
+        before1, after1, rp1, before2, after2, rp2, d1, d2 = testing()
+        r1.append(before1)
+        r1.append(after1)
+        r1.append(d1)
+        r1.append(rp1)
+        r2.append(before2)
+        r2.append(after2)
+        r2.append(d2)
+        r2.append(rp2)
+
+        chart1.append(r1)
+        chart2.append(r2)
+
+    chart("The_Reduction_of_Total_Elements.csv", chart1)
+    chart("The_Reduction_of_Instructions.csv", chart2)
+    print("The results are in the table The_Reduction_of_Total_Elements.csv and The_Reduction_of_Instructions.csv")
 
 main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
