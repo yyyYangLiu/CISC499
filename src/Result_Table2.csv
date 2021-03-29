@@ -1,0 +1,23 @@
+"The Reduction of Instructions
+(change of the number of code lines)"
+,Length of Original Program,Length of Optimized Program,Length Difference,Reduction Percentage
+Test1,11,10,1,9.09%
+Test2,16,16,0,0.0%
+Test3,6,4,2,33.33%
+Test4,4,3,1,25.0%
+Test5,13,8,5,38.46%
+Test6,7,5,2,28.57%
+Test7,14,8,6,42.86%
+Test8,7,4,3,42.86%
+Test9,10,10,0,0.0%
+Test10,9,7,2,22.22%
+Test11,13,10,3,23.08%
+Test12,12,9,3,25.0%
+Test13,21,19,2,9.52%
+Test14,4,4,0,0.0%
+Test15,11,10,1,9.09%
+Test16,15,12,3,20.0%
+Test17,6,4,2,33.33%
+Test18,6,6,0,0.0%
+Test19,22,20,2,9.09%
+Test20,9,9,0,0.0%
