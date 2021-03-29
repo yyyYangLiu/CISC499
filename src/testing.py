@@ -281,6 +281,41 @@ def execute(program, prog_length, register_dic):
     return register_dic
 
 
+def element_length(d):
+    count = 0
+    for k in d:         #[['r2', 'cos', 'r2'], ['r1', '/', 7, 'r1'], ['if', 5, '<', 'r0'], ['r0', 'sin', 'r1']]
+        for i in d[k]:  #['r2', 'cos', 'r2']
+            count = len(i) + count
+    return count
+            
+        
+def instruction_length(d):
+    count = 0
+    for k in d:         #[['r2', 'cos', 'r2'], ['r1', '/', 7, 'r1'], ['if', 5, '<', 'r0'], ['r0', 'sin', 'r1']]
+        count = len(d[k]) + count
+    return count
+
+
+# result for element reduction        
+def result1(before, after):
+    before_len = element_length(before)
+    after_len = element_length(after)
+    print("\n1. The change of total element number :\n")
+    print("The length of the original random program: ", before_len,"\n")
+    print("The length of the optimized program: ", after_len,"\n") 
+    return after_len / before_len
+
+
+# result for instruction reduction         
+def result2(before, after):
+    before_len = instruction_length(before)
+    after_len = instruction_length(after)
+    print("\n2. The change of instruction number (code lines):\n")
+    print("The length of the original random program: ", before_len,"\n")
+    print("The length of the optimized program: ", after_len,"\n") 
+    return after_len / before_len
+    
+
 def testing():
     max_prog_length = 6  # 6 instructions in total is the upper limit
     totalLabel = random.randint(1, 6)
@@ -300,14 +335,14 @@ def testing():
         dic_copy[label] = optim_program  
         for i in new_name:          #he
           new_register.append(i)
-    #print(new_register)
-    
+          
+    # print(new_register)
     # optimization process
     c = copy.deepcopy(dic_program)
     opti2.general_constant_opti(dic_copy)
     opti2.general_sub_eliminate(dic_copy)
-    
-    #print
+
+    #print(dic_copy)
     print("\nOriginal Program:\n")              # hard copy
     for i in c:
         print(i + " " + str(c[i]) + "\n")
@@ -320,25 +355,31 @@ def testing():
     for label in c:
         program = c[label]
         execute(program, len(program), register_dic)
-    print("\nOriginal result:", register_dic)
+    #print("\nOriginal result:", register_dic)
 
     # after
     compare_dic = {'r0': 1.5, 'r1': 1.5, 'r2': 1.5, 'r3': 1.5, 'r4': 1.5}
     for r in new_register:
       compare_dic[r]=1.5
-    print(compare_dic)
+    #print(compare_dic)
     for label in dic_copy:
         program = dic_copy[label]
         execute(program, len(program), compare_dic)
-    print("\nOptimiza result:", compare_dic)
+    #print("\nOptimiza result:", compare_dic)
+    #print(dic_program, dic_copy)
 
-    return register_dic, compare_dic
+    r1 = result1(dic_program, dic_copy)
+    print("The total elements are reduced by:", 100-r1*100, "%\n")
+    r2 = result2(dic_program, dic_copy)
+    print("The code lines (instruction number) are reduced by:", 100-r2*100, "%\n")
+    
 
-
-# compare the result
+# show the results
 def main():
-    for i in range(10):
+    testing_number = 2 # modify here to change the number of testing cases 
+    for i in range(testing_number):
         print("\n\nTesting ", i+1, ":\n")
-        register_dic, compare_dic = testing()            
+        testing()            
+
 
 main()
