@@ -401,8 +401,8 @@ def chart(name, c):
 # show the results
 def main():
 
-    chart1 = [["","Length of Original Program", "Length of Optimized Program", "Length Difference", "Reduction Percentage"]]
-    chart2 = [["","Length of Original Program", "Length of Optimized Program", "Length Difference", "Reduction Percentage"]]
+    chart1 = [["The Reduction of Elements\n(change of the number of terms)"],["","Length of Original Program", "Length of Optimized Program", "Length Difference", "Reduction Percentage"]]
+    chart2 = [["The Reduction of Instructions\n(change of the number of code lines)"], ["","Length of Original Program", "Length of Optimized Program", "Length Difference", "Reduction Percentage"]]
     
     testing_number = 20 # modify here to change the number of testing cases 
     for i in range(testing_number):
@@ -425,8 +425,8 @@ def main():
         chart1.append(r1)
         chart2.append(r2)
 
-    chart("The_Reduction_of_Total_Elements.csv", chart1)
-    chart("The_Reduction_of_Instructions.csv", chart2)
+    chart("Result_Table1.csv", chart1)
+    chart("Result_Table2.csv", chart2)
     print("The results are in the table The_Reduction_of_Total_Elements.csv and The_Reduction_of_Instructions.csv")
 
 main()
