@@ -248,18 +248,21 @@ def execute(program, prog_length, register_dic):
             if program[i][1] == 'e':
                 if isinstance(program[i][2], str):
                     program[i][2] = register_dic[program[i][2]]
-                updateDic = {program[i][0]: math.exp(program[i][2])}
+                try:
+                    updateDic = {program[i][0]: math.exp(program[i][2])}
+                except:
+                    print("Math error: math range error! ")
                 register_dic.update(updateDic)
             if program[i][1] == 'ln':
                 if isinstance(program[i][2], str):
                     program[i][2] = register_dic[program[i][2]]
                 if program[i][2] <= 0:
-                    print("ln fails!")
+                    print("Math Error: ln() fails!")
                     break
                 try:
                     updateDic = {program[i][0]: math.log(program[i][2])}
                 except:
-                    print("math error: ln(x) where x can not be 0")
+                    print("Math Error: ln(x) where x can not be 0")
                 register_dic.update(updateDic)
             if program[i][1] == 'cos':
                 if isinstance(program[i][2], str):
@@ -401,8 +404,12 @@ def chart(name, c):
 # show the results
 def main():
 
-    chart1 = [["The Reduction of Elements\n(change of the number of terms)"],["","Length of Original Program", "Length of Optimized Program", "Length Difference", "Reduction Percentage"]]
-    chart2 = [["The Reduction of Instructions\n(change of the number of code lines)"], ["","Length of Original Program", "Length of Optimized Program", "Length Difference", "Reduction Percentage"]]
+    chart1 = [["The Reduction of Elements", "", "", "", ""],
+              ["(change of the number of terms)", "", "", "", ""],
+              ["","Length of Original Program", "Length of Optimized Program", "Length Difference", "Reduction Percentage"]]
+    chart2 = [["The Reduction of Instructions", "", "", "", ""],
+              ["(change of the number of code lines)", "", "", "", ""],
+              ["","Length of Original Program", "Length of Optimized Program", "Length Difference", "Reduction Percentage"]]
     
     testing_number = 20 # modify here to change the number of testing cases 
     for i in range(testing_number):
