@@ -390,16 +390,49 @@ def testing():
     #print("The total elements are reduced by:", rp1, "\n")
     #print("The code lines (instruction number) are reduced by:", rp2, "\n")
 
-    return before1, after1, rp1, before2, after2, rp2, d1, d2
+    return before1, after1, rp1, before2, after2, rp2, d1, d2, register_dic, compare_dic
     
 
 
-# generate a table
+# generate a table YY
 def chart(name, c):
     with open(name, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerows(c)
 
+# convert dictionary to string
+def process_register(d1): # d1 = register set
+    slist = []
+    for i in d1:
+        d1[i] = round(d1[i],2)
+        element = str(i) + ": " + str(d1[i])
+        slist.append(element)
+    s1 = ", ".join(slist)
+    return s1
+
+# check the function
+def compare(d1, d2):
+    list2 = []
+    for i in d2:
+        list2.append(d2[i])
+        
+    if d1 == d2:
+        return "Same Function"
+    
+    elif len(d2) > len(d1):
+        for i in d1:
+            if d1[i] not in list2:
+                return "Fails"
+        return "Same Function with more registers for single assignment form"
+        
+    else:
+        return "Fails"
+        
+        
+            
+
+
+    
     
 # show the results
 def main():
@@ -407,33 +440,53 @@ def main():
     chart1 = [["The Reduction of Elements", "", "", "", ""],
               ["(change of the number of terms)", "", "", "", ""],
               ["","Length of Original Program", "Length of Optimized Program", "Length Difference", "Reduction Percentage"]]
+    
     chart2 = [["The Reduction of Instructions", "", "", "", ""],
               ["(change of the number of code lines)", "", "", "", ""],
               ["","Length of Original Program", "Length of Optimized Program", "Length Difference", "Reduction Percentage"]]
     
+    chart3 = [["", "Register Assignment", "Comparison"]]
+    
     testing_number = 20 # modify here to change the number of testing cases 
     for i in range(testing_number):
-        r1 = []
-        r2 = []
+        r1 = [] # length of elements
+        r2 = [] # length of code lines
+        r3 = [] # original register
+        r4 = [] # result of registers after optimization
 
         r1.append("Test"+str(i+1))
         r2.append("Test"+str(i+1))
+        r3.append("Test"+str(i+1))
+        r4.append("")
         #print("\n\nTesting ", i+1, ":\n")
-        before1, after1, rp1, before2, after2, rp2, d1, d2 = testing()
+        before1, after1, rp1, before2, after2, rp2, d1, d2, re1, re2 = testing()
         r1.append(before1)
         r1.append(after1)
         r1.append(d1)
         r1.append(rp1)
+        
         r2.append(before2)
         r2.append(after2)
         r2.append(d2)
         r2.append(rp2)
 
+        r_before = process_register(re1)
+        r_after = process_register(re2)
+        message = compare(re1, re2)
+
+        r3.append(r_before)
+        r3.append(message)
+        r4.append(r_after)
+
         chart1.append(r1)
         chart2.append(r2)
+        chart3.append(r3)
+        chart3.append(r4)
+        
 
     chart("Result_Table1.csv", chart1)
     chart("Result_Table2.csv", chart2)
+    chart("Function_Check_Table3.csv", chart3)
     print("The results are in the table The_Reduction_of_Total_Elements.csv and The_Reduction_of_Instructions.csv")
 
 main()
