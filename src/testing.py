@@ -394,19 +394,30 @@ def testing():
     
 
 
-# generate a table YY
+# generate a table 
 def chart(name, c):
     with open(name, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerows(c)
 
+
 # convert dictionary to string
 def process_register(d1): # d1 = register set
     slist = []
+    
     for i in d1:
-        d1[i] = round(d1[i],2)
+        if isinstance(d1[i],complex) == False:
+            d1[i] = round(d1[i],2)
+            element = str(i) + ": " + str(d1[i])
+            slist.append(element)
+        else:
+            print(d1[i])
+    '''
+    for i in d1:
         element = str(i) + ": " + str(d1[i])
         slist.append(element)
+    '''
+        
     s1 = ", ".join(slist)
     return s1
 
@@ -428,12 +439,7 @@ def compare(d1, d2):
     else:
         return "Fails"
         
-        
-            
-
-
-    
-    
+          
 # show the results
 def main():
 
@@ -456,8 +462,8 @@ def main():
 
         r1.append("Test"+str(i+1))
         r2.append("Test"+str(i+1))
-        r3.append("Test"+str(i+1))
-        r4.append("")
+        r3.append("Test"+str(i+1)+" Original")
+        r4.append("Test"+str(i+1)+" Optimized")
         #print("\n\nTesting ", i+1, ":\n")
         before1, after1, rp1, before2, after2, rp2, d1, d2, re1, re2 = testing()
         r1.append(before1)
@@ -477,6 +483,7 @@ def main():
         r3.append(r_before)
         r3.append(message)
         r4.append(r_after)
+        r4.append("")
 
         chart1.append(r1)
         chart2.append(r2)
