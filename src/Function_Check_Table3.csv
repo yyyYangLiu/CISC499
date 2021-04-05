@@ -1,41 +1,41 @@
 ,Register Assignment,Comparison
-Test1 Original,"r0: -4.5, r1: 0.07, r2: 0.41, r3: 1.5, r4: 1.5",Same Function
-Test1 Optimized,"r0: -4.5, r1: 0.07, r2: 0.41, r3: 1.5, r4: 1.5",
-Test2 Original,"r0: 4.01, r1: -0.97, r2: -0.99, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
-Test2 Optimized,"r0: 4.01, r1: -0.97, r2: -0.99, r3: 1.5, r4: 1.5, r10: 1.5",
-Test3 Original,"r0: 0.0, r1: 0.54, r2: 0.96, r3: 1.5, r4: 1.5",Same Function
-Test3 Optimized,"r0: 0.0, r1: 0.54, r2: 0.96, r3: 1.5, r4: 1.5",
-Test4 Original,"r0: 6.0, r1: 0.07, r2: 0.07, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
-Test4 Optimized,"r0: 6.0, r1: 5.5, r2: 1.0, r3: 1.5, r4: 1.5, r20: 0.07, r10: 0.84",
-Test5 Original,"r0: 0.54, r1: 4.5, r2: 1.5, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
-Test5 Optimized,"r0: 1.0, r1: 4.5, r2: 1.5, r3: 1.5, r4: 1.5, r00: 0.54",
-Test6 Original,"r0: 0.41, r1: 1.0, r2: 0.61, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
-Test6 Optimized,"r0: 0.41, r1: 1.0, r2: -0.96, r3: 1.5, r4: 1.5, r20: 1.5, r21: 0.61",
-Test7 Original,"r0: 0.14, r1: 2.71, r2: 1.5, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
-Test7 Optimized,"r0: 0.96, r1: -6.5, r2: 1.5, r3: 1.5, r4: 1.5, r10: 1.0, r11: 2.71, r00: 13.5, r01: 0.14",
-Test8 Original,"r0: 1.5, r1: 0.0, r2: 0.27, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
-Test8 Optimized,"r0: 1.5, r1: 0.0, r2: 0.0, r3: 1.5, r4: 1.5, r10: 1.5, r20: 11.18, r21: 0.27",
-Test9 Original,"r0: 0.3, r1: 2.25, r2: 1.95, r3: 1.5, r4: 1.5",Fails
-Test9 Optimized,"r0: 1.5, r1: -4.5, r2: 1.95, r3: 1.5, r4: 1.5, r10: 2.25, r20: 1.5, r00: 1.5, r01: 1.5",
-Test10 Original,"r0: 1.79, r1: 1.1, r2: 1.5, r3: 1.5, r4: 1.5",Same Function
-Test10 Optimized,"r0: 1.79, r1: 1.1, r2: 1.5, r3: 1.5, r4: 1.5",
-Test11 Original,"r0: 10.5, r1: 0.75, r2: -2.33, r3: 1.5, r4: 1.5",Fails
-Test11 Optimized,"r0: 0.0, r1: 1.39, r2: -0.19, r3: 1.5, r4: 1.5, r20: -3.5, r00: 10.5",
-Test12 Original,"r0: 1.5, r1: 1.5, r2: 1.5, r3: 1.5, r4: 1.5",Same Function
-Test12 Optimized,"r0: 1.5, r1: 1.5, r2: 1.5, r3: 1.5, r4: 1.5",
-Test13 Original,"r0: 1.0, r1: 1.0, r2: -4.0, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
-Test13 Optimized,"r0: 1.0, r1: 1.0, r2: 1.95, r3: 1.5, r4: 1.5, r20: -4.0",
-Test14 Original,"r0: 0.41, r1: 3.0, r2: 403.43, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
-Test14 Optimized,"r0: 0.41, r1: 3.0, r2: -0.99, r3: 1.5, r4: 1.5, r20: 1096.63, r21: -0.9, r22: 22.2, r23: 403.43",
-Test15 Original,"r0: 7.59, r1: -15.47, r2: 1.5, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
-Test15 Optimized,"r0: 0.28, r1: -15.47, r2: 1.5, r3: 1.5, r4: 1.5, r00: 7.59",
-Test16 Original,"r0: 0.84, r1: 1.5, r2: 0.0, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
-Test16 Optimized,"r0: 0.84, r1: 1.5, r2: -0.76, r3: 1.5, r4: 1.5, r20: 0.0",
-Test17 Original,"r0: -1.5, r1: 1.5, r2: 1.5, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
-Test17 Optimized,"r0: 0.07, r1: 1.5, r2: 1.5, r3: 1.5, r4: 1.5, r00: -1.5, r01: 1.5",
-Test18 Original,"r0: 4.5, r1: 9.0, r2: 5.0, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
-Test18 Optimized,"r0: 4.5, r1: 1096.63, r2: 0.0, r3: 1.5, r4: 1.5, r20: 5.0, r10: 9.0",
-Test19 Original,"r0: 1096.63, r1: 0.07, r2: 0.0, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
-Test19 Optimized,"r0: 1096.63, r1: 0.07, r2: 0.0, r3: 1.5, r4: 1.5, r00: 0.07",
-Test20 Original,"r0: 0.0, r1: 54.6, r2: 2980.96, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
-Test20 Optimized,"r0: 0.0, r1: 1.5, r2: 3.0, r3: 1.5, r4: 1.5, r20: 2980.96, r00: 20.09, r10: 8103.08, r11: 54.6",
+Test1 Original,"r0: 9.5, r1: 0.5, r2: 1.0, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
+Test1 Optimized,"r0: 9.5, r1: 1.5, r2: 1.0, r3: 1.5, r4: 1.5, r10: 0.5, r20: 1.5, r21: 1.5",
+Test2 Original,"r0: 1.84, r1: 1.61, r2: 1.84, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
+Test2 Optimized,"r0: 1.84, r1: 0.0, r2: 1.84, r3: 1.5, r4: 1.5, r10: 1.61",
+Test3 Original,"r0: 13.5, r1: 0.07, r2: 0.0, r3: 1.5, r4: 1.5",Same Function
+Test3 Optimized,"r0: 13.5, r1: 0.07, r2: 0.0, r3: 1.5, r4: 1.5",
+Test4 Original,"r0: 1.5, r1: 1.0, r2: 1.0, r3: 1.5, r4: 1.5",Same Function
+Test4 Optimized,"r0: 1.5, r1: 1.0, r2: 1.0, r3: 1.5, r4: 1.5",
+Test5 Original,"r0: 1.5, r1: 1.5, r2: 1.5, r3: 1.5, r4: 1.5",Same Function
+Test5 Optimized,"r0: 1.5, r1: 1.5, r2: 1.5, r3: 1.5, r4: 1.5",
+Test6 Original,"r0: 1096.63, r1: 1.5, r2: 6.5, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
+Test6 Optimized,"r0: 1096.63, r1: 1.5, r2: 6.5, r3: 1.5, r4: 1.5, r10: 1.5, r20: 1.5, r21: 1.5, r22: 1.5",
+Test7 Original,"r0: 38.44, r1: 0.74, r2: 0.19, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
+Test7 Optimized,"r0: 0.07, r1: 5.2, r2: 0.19, r3: 1.5, r4: 1.5, r10: 0.74, r00: 2.72, r01: 38.44",
+Test8 Original,"r0: 4.5, r1: 1.5, r2: 0.07, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
+Test8 Optimized,"r0: 4.5, r1: 1.5, r2: -7.5, r3: 1.5, r4: 1.5, r20: 0.07",
+Test9 Original,"r0: 2.72, r1: 1.0, r2: -0.91, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
+Test9 Optimized,"r0: 0.99, r1: 1.0, r2: 2.72, r3: 1.5, r4: 1.5, r10: 2.2, r20: -0.91, r21: 7.39, r00: 2.72, r01: 3.0, r02: 7.5",
+Test10 Original,"r0: 1.5, r1: 0.41, r2: 1.5, r3: 1.5, r4: 1.5",Same Function
+Test10 Optimized,"r0: 1.5, r1: 0.41, r2: 1.5, r3: 1.5, r4: 1.5",
+Test11 Original,"r0: 12.0, r1: 0.0, r2: -0.91, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
+Test11 Optimized,"r0: -0.99, r1: 2980.96, r2: 1.5, r3: 1.5, r4: 1.5, r10: 6.0, r11: 0.0, r20: 0.07, r21: 2.72, r22: -0.91, r00: 1.47, r01: 12.0",
+Test12 Original,"r0: 4.5, r1: 3.0, r2: 0.54, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
+Test12 Optimized,"r0: 0.41, r1: 3.0, r2: 1.39, r3: 1.5, r4: 1.5, r00: 4.5, r20: 1.0, r21: 0.54",
+Test13 Original,"r0: 0.41, r1: -0.62, r2: -0.82, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
+Test13 Optimized,"r0: 1.0, r1: 4.5, r2: 0.5, r3: 1.5, r4: 1.5, r10: -0.99, r11: 0.54, r12: -0.62, r00: 0.07, r01: -0.69, r02: 0.55, r03: -0.96, r04: 0.41, r05: 1.5, r20: 0.07, r21: 4.48, r22: 0.51, r23: -0.82",
+Test14 Original,"r0: 0.54, r1: 13.5, r2: 0.91, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
+Test14 Optimized,"r0: 1.5, r1: 1.5, r2: -0.42, r3: 1.5, r4: 1.5, r10: 13.5, r20: 0.91, r00: 0.54",
+Test15 Original,"r0: 1.0, r1: 2.5, r2: 1.5, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
+Test15 Optimized,"r0: 0.41, r1: 0.19, r2: 1.5, r3: 1.5, r4: 1.5, r10: 2.5, r00: 1.0",
+Test16 Original,"r0: 0.84, r1: -0.28, r2: -5.28, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
+Test16 Optimized,"r0: 2980.96, r1: -0.28, r2: 1.0, r3: 1.5, r4: 1.5, r00: 0.84, r20: -17.89, r21: -5.28",
+Test17 Original,"r0: 0.07, r1: 0.07, r2: -2.65, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
+Test17 Optimized,"r0: 0.0, r1: 14.0, r2: 5.33, r3: 1.5, r4: 1.5, r10: -0.99, r11: 0.07, r20: -2.65, r00: 4.67, r01: 4.48, r02: 9.48, r03: 1.5, r04: 1.5, r05: 0.07",
+Test18 Original,"r0: 20.09, r1: 0.96, r2: 19.5, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
+Test18 Optimized,"r0: 20.09, r1: 4.48, r2: 6.5, r3: 1.5, r4: 1.5, r10: 403.43, r11: 0.96, r20: 19.5",
+Test19 Original,"r0: 0.96, r1: 1.5, r2: 0.14, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
+Test19 Optimized,"r0: 5.5, r1: 1.5, r2: 1.5, r3: 1.5, r4: 1.5, r20: 0.14, r00: 6.0, r01: 0.96",
+Test20 Original,"r0: 0.41, r1: 12.0, r2: 0.0, r3: 1.5, r4: 1.5",Same Function with more registers for single assignment form
+Test20 Optimized,"r0: 2.25, r1: 0.41, r2: 1.0, r3: 1.5, r4: 1.5, r10: -0.91, r11: 12.0, r00: 0.0, r01: 0.41, r20: 1.5, r21: 5.41, r22: 0.0",

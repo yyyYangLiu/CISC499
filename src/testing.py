@@ -83,21 +83,6 @@ def random_program(num, prog_length, totalLabel):
 
     # Print the LGP program as a list of instructions
     # An instruction should be printed as, for instance r1 = r3 + r0 or r2 = r0 * 5
-    '''
-    print("The randomly generated LGP program is:")
-    for i in range(0, prog_length):
-        if len(program[i]) == 4:
-            if program[i][0] == 'if':
-                print(program[i][0], program[i][1], program[i][2], program[i][3])
-            else:
-                print(program[i][0], "=", program[i][2], program[i][1], program[i][3])
-        elif len(program[i]) == 3:
-            print(program[i][0], "=", program[i][1], program[i][2])
-        elif len(program[i]) == 2:
-            print(program[i][0] + " " + program[i][1])
-    
-    return program
-    '''
     program_ls = []
     #print("The randomly generated LGP program is:")
     for i in range(0, prog_length):
@@ -179,6 +164,7 @@ def test_condition(line, dic):
 
 def execute(program, prog_length, register_dic):
     if_statement = True
+    program_copy = copy.deepcopy(program)
     for i in range(0, prog_length):
         if if_statement:
             if len(program[i]) == 2 and program[i][0] != "goto" and program[i][0] != "if":
@@ -274,17 +260,66 @@ def execute(program, prog_length, register_dic):
                     program[i][2] = register_dic[program[i][2]]
                 updateDic = {program[i][0]: math.sin(program[i][2])}
                 register_dic.update(updateDic)
+             
             if program[i][0] == 'if':
                 if_statement = test_condition(program[i], register_dic)
+                if if_statement==False:
+                
+                  if len(program_copy)>i+1:
+                    del program_copy[i+1]
+                    del program_copy[i]
+            '''
+            #---------update yy------
+            if program[i][0] == 'if': #[["if", "r1", "<", "r2"], ["r11", "r20"]]
+                if_statement = test_condition(program[i], register_dic)
+                if if_statement == False and program[i] != program[-1]:
+                    for e in program[i+1]:
+                        if isinstance(e, str) and e[0] == "r" and len(e) > 2:
+                            if int(e[2:]) == 0: #'0'
+                                old = e[0:2]
+                                updateDic = {program[i+1][0]: register_dic[old]}
+                                register_dic.update(updateDic)
+                            if int(e[2:]) > 0:
+                                mark = str(int(e[2:]) - 1) # after:"r1"+"1"
+                                old = e[0:2]+mark
+                                updateDic = {program[i+1][0]: register_dic[old]}
+                                register_dic.update(updateDic) 
+            #---------update yy------
+            '''                    
             if program[i][0] == 'goto':
-                return int(program[i][1][1:]), register_dic
+                return register_dic, program_copy, int(program[i][1][1:])
+                
         if not if_statement:
             if program[i][0] != 'if':
                 if_statement = True
 
-    return register_dic
+    return register_dic, program_copy, 999
+
+#---hy-update
+def before_trans(program):
+    program_ls = []
+    prog_length=len(program)
+    for i in range(0, prog_length):
+        program_ls.append([])
+        if len(program[i]) == 4:
+            if program[i][0] == 'if':
+                #print(program[i][0], program[i][1], program[i][2], program[i][3])
+                program_ls[i] = [program[i][0], program[i][1], program[i][2], program[i][3]]
+            else:
+                #print(program[i][0], "=", program[i][2], program[i][1], program[i][3])
+                program_ls[i] = [program[i][0], ":=", program[i][2], program[i][1], program[i][3]]
+        elif len(program[i]) == 3:
+            #print(program[i][0], "=", program[i][1], program[i][2])
+            program_ls[i] = [program[i][0], ":=", program[i][1], program[i][2]]
+        elif len(program[i]) == 2:
+            #print(program[i][0] + " " + program[i][1])
+            program_ls[i] = [program[i][0], " ", program[i][1]]
+
+    return program,program_ls
+#---hy-update
 
 
+#-----YY---update
 def element_length(d):
     count = 0
     for k in d:         #[['r2', 'cos', 'r2'], ['r1', '/', 7, 'r1'], ['if', 5, '<', 'r0'], ['r0', 'sin', 'r1']]
@@ -322,76 +357,6 @@ def result2(before, after):
     print("The length of the optimized program: ", after_len,"\n")
     '''
     return before_len, after_len, after_len / before_len
-    
-
-def testing():
-    max_prog_length = 6  # 6 instructions in total is the upper limit
-    totalLabel = random.randint(1, 6)
-
-    dic_program = {}#he
-    dic_copy={}     #he
-    new_register=[]
-    # generate program
-    dic_program = {}
-    for i in range(totalLabel):
-        prog_length = random.randint(1, max_prog_length)
-        program, program_ls = random_program(i, prog_length, totalLabel)#he
-        label = "L" + str(i)
-        dic_program[label] = program
-
-        optim_program,new_name = opti1.optimization(program_ls)#he
-        dic_copy[label] = optim_program  
-        for i in new_name:          #he
-          new_register.append(i)
-          
-    # print(new_register)
-    # optimization process
-    c = copy.deepcopy(dic_program)
-    opti2.general_constant_opti(dic_copy)
-    opti2.general_sub_eliminate(dic_copy)
-    
-    '''
-    #print(dic_copy)
-    print("\nOriginal Program:\n")              # hard copy
-    for i in c:
-        print(i + " " + str(c[i]) + "\n")
-    print("\nOptimization Program:\n")          # dic_program
-    for i in dic_copy:
-        print(i + " " + str(dic_copy[i]) + "\n")
-    '''
-
-    # before
-    register_dic = {'r0': 1.5, 'r1': 1.5, 'r2': 1.5, 'r3': 1.5, 'r4': 1.5}
-    for label in c:
-        program = c[label]
-        execute(program, len(program), register_dic)
-    #print("\nOriginal result:", register_dic)
-
-    # after
-    compare_dic = {'r0': 1.5, 'r1': 1.5, 'r2': 1.5, 'r3': 1.5, 'r4': 1.5}
-    for r in new_register:
-      compare_dic[r]=1.5
-    #print(compare_dic)
-    for label in dic_copy:
-        program = dic_copy[label]
-        execute(program, len(program), compare_dic)
-    #print("\nOptimiza result:", compare_dic)
-    #print(dic_program, dic_copy)
-
-
-    before1, after1, r1 = result1(dic_program, dic_copy)
-    before2, after2, r2 = result2(dic_program, dic_copy)
-    
-    rp1 = str(round(100-r1*100,2))+"%"
-    rp2 = str(round(100-r2*100,2))+"%"
-    d1 = before1 - after1
-    d2 = before2 - after2
-
-    #print("The total elements are reduced by:", rp1, "\n")
-    #print("The code lines (instruction number) are reduced by:", rp2, "\n")
-
-    return before1, after1, rp1, before2, after2, rp2, d1, d2, register_dic, compare_dic
-    
 
 
 # generate a table 
@@ -412,12 +377,7 @@ def process_register(d1): # d1 = register set
             slist.append(element)
         else:
             print(d1[i])
-    '''
-    for i in d1:
-        element = str(i) + ": " + str(d1[i])
-        slist.append(element)
-    '''
-        
+            
     s1 = ", ".join(slist)
     return s1
 
@@ -430,7 +390,7 @@ def compare(d1, d2):
     if d1 == d2:
         return "Same Function"
     
-    elif len(d2) > len(d1):
+    elif len(d2) >= len(d1):
         for i in d1:
             if d1[i] not in list2:
                 return "Fails"
@@ -438,7 +398,148 @@ def compare(d1, d2):
         
     else:
         return "Fails"
+
+
+def deleteLabel(program):
+    set_jumps = {}
+    for label in program:
+        flag = True
+        for i in program[label]:
+            if "goto" == i[0] and flag:
+                set_jumps[label] = i[1]
+                flag = False
+
+    unreach = []
+    for L in set_jumps:
+        if L < set_jumps[L]:
+            key_number = int(L[1:])
+            value = int(set_jumps[L][1:])
+            d = value - (key_number + 1)
+            for i in range(d):
+                unL = key_number + (i+1)
+                unreach.append("L"+str(unL))
+
+    for label in unreach:
+        if label in program:
+            del program[label]
+
+    return program
+    
         
+#-----YY------
+    
+
+def testing():
+    max_prog_length = 6  # 6 instructions in total is the upper limit
+    totalLabel = random.randint(1, 6)
+
+    dic_program = {}#he
+    dic_copy={}     #he
+    new_register=[]
+    # generate program
+    dic_program = {}
+    #---hy update
+    totalList=[]
+    determineList=[]
+    #----hy update
+    for i in range(totalLabel):
+        prog_length = random.randint(1, max_prog_length)
+        program, program_ls = random_program(i, prog_length, totalLabel)#he
+        label = "L" + str(i)
+        dic_program[label] = program
+
+
+    #-----hy update-----
+    c = copy.deepcopy(dic_program)
+    
+    # before
+    register_dic = {'r0': 1.5, 'r1': 1.5, 'r2': 1.5, 'r3': 1.5, 'r4': 1.5}
+    
+    for label in c:
+        program = c[label]
+        a,pro_copy,goto_num=execute(program, len(program), register_dic)
+
+        for elem in pro_copy:
+          totalList.append(elem) 
+          determineList.append(elem)   
+        determineList.append("stop here")
+    pro,totalList=before_trans(totalList)
+    #print(pro,"\n\n",totalList)
+    # ---------update 4.5----------
+
+    # testing opti1 --------------------------------------------------------------
+    after_single_program,new_name = opti1.single_assign(totalList)#he 
+    count=0
+    start=0
+    end=0
+    for i in range(len(determineList)):
+      if determineList[i]=="stop here":
+        label = "L" + str(count)
+        end=i-count
+        dic_copy[label]=after_single_program[start:end]
+               
+        count+=1
+        start=i+1-count
+        continue 
+    for i in new_name:          #he
+      new_register.append(i)
+      
+    for i in range(totalLabel): 
+      label = "L" + str(i)  
+      dic_copy[label] = opti1.optimization(dic_copy[label])#he
+   #------------------------------------------------------------------------
+
+      
+    #optimization process 2 4
+    #c = copy.deepcopy(dic_program) update
+    opti2.general_constant_opti(dic_copy)
+    opti2.general_sub_eliminate(dic_copy)
+
+    '''
+    #print(dic_copy)
+    print("\nOriginal Program:\n")              # hard copy
+    for i in c:
+        print(i + " " + str(c[i]) + "\n")
+    print("\nOptimization Program:\n")          # dic_program
+    for i in dic_copy:
+        print(i + " " + str(dic_copy[i]) + "\n")
+    '''
+
+
+    # before
+    register_dic = {'r0': 1.5, 'r1': 1.5, 'r2': 1.5, 'r3': 1.5, 'r4': 1.5}
+    exe_before = deleteLabel(c)
+    for label in exe_before:
+        program = c[label]
+        execute(program, len(program), register_dic) # goto Label5        
+    #print("\nOriginal result:", register_dic)
+
+    # after
+    compare_dic = {'r0': 1.5, 'r1': 1.5, 'r2': 1.5, 'r3': 1.5, 'r4': 1.5}
+    for r in new_register:
+      compare_dic[r]=1.5
+      
+    #print(compare_dic)
+    for label in dic_copy:
+        program = dic_copy[label]
+        execute(program, len(program), compare_dic)
+                
+    #print("\nOptimiza result:", compare_dic)
+
+
+    before1, after1, r1 = result1(dic_program, dic_copy)
+    before2, after2, r2 = result2(dic_program, dic_copy)
+    
+    rp1 = str(round(100-r1*100,2))+"%"
+    rp2 = str(round(100-r2*100,2))+"%"
+    d1 = before1 - after1
+    d2 = before2 - after2
+
+    #print("The total elements are reduced by:", rp1, "\n")
+    #print("The code lines (instruction number) are reduced by:", rp2, "\n")
+
+    return before1, after1, rp1, before2, after2, rp2, d1, d2, register_dic, compare_dic
+    
           
 # show the results
 def main():
@@ -497,9 +598,6 @@ def main():
     print("The results are in the table The_Reduction_of_Total_Elements.csv and The_Reduction_of_Instructions.csv")
 
 main()
-
-
-
 
 
 

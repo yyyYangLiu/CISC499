@@ -112,17 +112,17 @@ def transform(program):
       new_ls[i] = program[i]
   return new_ls
 
-                    
+
+                   
 def optimization(argu_list):
   ls=[]
+  
   for i in range(len(argu_list)):
     ls.append(alge_opti(argu_list[i]))
-
-  ls,new_name_ls=single_assign(ls)
 
   ls=copy_propagation(ls)
 
   # after optimization, transform it
   ls=transform(ls)
   #print("after transform",ls)
-  return ls,new_name_ls
+  return ls

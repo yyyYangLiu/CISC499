@@ -57,10 +57,11 @@ def general_constant_opti(program):
         program[label] = constant_opti(program[label])
 
     # case3
-    unreachable_labels = get_goto_labels(program)
+    set_jumps = get_goto_labels(program)
+    unreachable_labels = unreachable_label(set_jumps) #[L3, L4]
     for label in unreachable_labels:
         if label in program:
-            del program[unreachable_labels[label]]
+            del program[label]
 
     # delete empty block
     keylist = copy.deepcopy(list(program.keys()))
@@ -74,10 +75,14 @@ def general_constant_opti(program):
 def get_goto_labels(program):
     
     goto_set = {}
+    
     for label in program:
+        
+        flag = True
         for i in program[label]:
-            if "goto" == i[0]:
-                goto_set[label+"jumps_to"] = i[1]
+            if "goto" == i[0] and flag:
+                goto_set[label] = i[1]
+                flag = False
                 
     return goto_set
                 
@@ -154,7 +159,17 @@ def branch_opti(block):
     
 # Case3: eliminating unreachable code: how to determine if the block can be reached or not? when the code is not jump_to, but also executed
 # return labels of unreachable labeled blocks 
-def unreachable_label(set_labels, set_jumps):
+def unreachable_label(set_jumps):
+    unreach = []
+    for L in set_jumps:
+        if L < set_jumps[L]:
+            key_number = int(L[1:])
+            value = int(set_jumps[L][1:])
+            d = value - (key_number + 1)
+            for i in range(d):
+                unL = key_number + (i+1)
+                unreach.append("L"+str(unL))
+    '''
     
     jumps_to_list = []
     for i in set_jumps:
@@ -164,8 +179,8 @@ def unreachable_label(set_labels, set_jumps):
     for label in set_labels:
         if label not in jumps_to_list:
             unreach_block.append(label)
-            
-    return unreach_block
+    '''    
+    return unreach
 
 
 '''
@@ -209,18 +224,26 @@ def common_sub_eliminate(block):
 testing use
 '''
 def testing_2_4():
-    '''
+    
     # 2. Constant Folding & Flow of Control Optimization
     
     # case1, case2: constant folding
+    '''
     program = {'L0': [['if', 9, '<=', 0], ['r2', '**', 'r2', 'r2'], ['r1', 'e', 'r4']]}
     output1 = general_constant_opti(program)
     for i in output1:
         print(i + " " + str(output1[i]) + "\n")
+    '''
     # case3: testing eliminating dead code blocks 
-    set_labels = {"L1": [["r0", "+", 1, 2], [["if","2","<", "0"], ["goto", "L"]]], "L2": ["r1", "cos", 45]}                # the program set 
-    set_jumps = {"J1": "L1", "J2": "L3", "J3": "L1"}    # go through each instruction to get this set: {The current label jumps to: label_x}
-    output2 = unreachable_label(set_labels, set_jumps)
+    program = {"L1": [["r0", "+", 1, 2], ["if", 6,"<", 9],["goto", "L5"]],
+                  "L2": [["r1", "cos", 45]],
+                  "L3": [["r1", "cos", 45]],
+                  "L4": [["r1", "cos", 45]],
+                  "L5": [["r1", "cos", 45]]
+                  }
+    # the program set 
+    # go through each instruction to get this set: {The current label jumps to: label_x}
+    output2 = general_constant_opti(program)
     print("The result for case3 (eliminating dead code bolocks): ", output2)
     '''
     # 4. Common Subexpression Elimination
@@ -233,6 +256,6 @@ def testing_2_4():
            'L5': [["goto", "L2"],["goto", "L2"]]}
     output2 = general_sub_eliminate(program)
     print(output2)
-    
+    '''
 
 #testing_2_4()
