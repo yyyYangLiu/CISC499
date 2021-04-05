@@ -269,7 +269,6 @@ def execute(program, prog_length, register_dic):
                     del program_copy[i+1]
                     del program_copy[i]
             '''
-            #---------update yy------
             if program[i][0] == 'if': #[["if", "r1", "<", "r2"], ["r11", "r20"]]
                 if_statement = test_condition(program[i], register_dic)
                 if if_statement == False and program[i] != program[-1]:
@@ -284,7 +283,6 @@ def execute(program, prog_length, register_dic):
                                 old = e[0:2]+mark
                                 updateDic = {program[i+1][0]: register_dic[old]}
                                 register_dic.update(updateDic) 
-            #---------update yy------
             '''                    
             if program[i][0] == 'goto':
                 return register_dic, program_copy, int(program[i][1][1:])
