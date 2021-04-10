@@ -71,20 +71,7 @@ def general_constant_opti(program):
     return program
 
 
-# returns the set of labels after "goto"
-def get_goto_labels(program):
-    
-    goto_set = {}
-    
-    for label in program:
-        
-        flag = True
-        for i in program[label]:
-            if "goto" == i[0] and flag:
-                goto_set[label] = i[1]
-                flag = False
-                
-    return goto_set
+
                 
     
 # Constant Folding & Flow of Control Optimization
@@ -158,7 +145,23 @@ def branch_opti(block):
                           
     
 # Case3: eliminating unreachable code: how to determine if the block can be reached or not? when the code is not jump_to, but also executed
-# return labels of unreachable labeled blocks 
+# return labels of unreachable labeled blocks
+# returns the set of labels after "goto"
+def get_goto_labels(program):
+    
+    goto_set = {}
+    
+    for label in program:
+        
+        flag = True
+        for i in program[label]:
+            if "goto" == i[0] and flag:
+                goto_set[label] = i[1]
+                flag = False
+                
+    return goto_set
+
+
 def unreachable_label(set_jumps):
     unreach = []
     for L in set_jumps:
@@ -169,17 +172,7 @@ def unreachable_label(set_jumps):
             for i in range(d):
                 unL = key_number + (i+1)
                 unreach.append("L"+str(unL))
-    '''
-    
-    jumps_to_list = []
-    for i in set_jumps:
-        jumps_to_list.append(set_jumps[i])
-
-    unreach_block = []  
-    for label in set_labels:
-        if label not in jumps_to_list:
-            unreach_block.append(label)
-    '''    
+   
     return unreach
 
 
@@ -234,6 +227,7 @@ def testing_2_4():
     for i in output1:
         print(i + " " + str(output1[i]) + "\n")
     '''
+    '''
     # case3: testing eliminating dead code blocks 
     program = {"L1": [["r0", "+", 1, 2], ["if", 6,"<", 9],["goto", "L5"]],
                   "L2": [["r1", "cos", 45]],
@@ -247,15 +241,18 @@ def testing_2_4():
     print("The result for case3 (eliminating dead code bolocks): ", output2)
     '''
     # 4. Common Subexpression Elimination
-    
-    program = {'L0': [['r0', 'cos', 7], ['if', 'r3', '>', 'r1'], ['if', 'r2', '>', 'r4'], ['goto', 'L1']],
+    '''
            'L1': [['r2', 'ln', 6], ['if', 2, '==', 'r2'], ['r0', '-', 'r2', 'r2'],['r1', 'e', 3]],
            'L2': [['r2', 'cos', 2], ['r1', 'sin', 'r3'], ['r2', '%', 3, 'r2'],['r0', 'ln', 8]],
            'L3': [['r0', '/', 'r4', 6], ['if', 2, '<', 6], ['r1', 'ln', 'r1']],
+    
+    
+    program = {'L0': [['r0', 'cos', 7], ['if', 'r3', '>', 'r1'], ['if', 'r2', '>', 'r4'], ['goto', 'L1']],
            'L4': [["x", "+", 1, 2],["y", "cos", 45], ["z","+", 1, 2]],
            'L5': [["goto", "L2"],["goto", "L2"]]}
     output2 = general_sub_eliminate(program)
     print(output2)
     '''
+    
 
 #testing_2_4()

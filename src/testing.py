@@ -263,35 +263,17 @@ def execute(program, prog_length, register_dic):
              
             if program[i][0] == 'if':
                 if_statement = test_condition(program[i], register_dic)
-                if if_statement==False:
-                
-                  if len(program_copy)>i+1:
-                    del program_copy[i+1]
-                    del program_copy[i]
-            '''
-            if program[i][0] == 'if': #[["if", "r1", "<", "r2"], ["r11", "r20"]]
-                if_statement = test_condition(program[i], register_dic)
-                if if_statement == False and program[i] != program[-1]:
-                    for e in program[i+1]:
-                        if isinstance(e, str) and e[0] == "r" and len(e) > 2:
-                            if int(e[2:]) == 0: #'0'
-                                old = e[0:2]
-                                updateDic = {program[i+1][0]: register_dic[old]}
-                                register_dic.update(updateDic)
-                            if int(e[2:]) > 0:
-                                mark = str(int(e[2:]) - 1) # after:"r1"+"1"
-                                old = e[0:2]+mark
-                                updateDic = {program[i+1][0]: register_dic[old]}
-                                register_dic.update(updateDic) 
-            '''                    
+                   
             if program[i][0] == 'goto':
                 return register_dic, program_copy, int(program[i][1][1:])
                 
         if not if_statement:
+            program_copy.remove(program[i])
             if program[i][0] != 'if':
                 if_statement = True
 
     return register_dic, program_copy, 999
+
 
 #---hy-update
 def before_trans(program):
@@ -422,8 +404,6 @@ def deleteLabel(program):
             del program[label]
 
     return program
-    
-        
 #-----YY------
     
 
@@ -431,12 +411,11 @@ def testing():
     max_prog_length = 6  # 6 instructions in total is the upper limit
     totalLabel = random.randint(1, 6)
 
-    dic_program = {}#he
-    dic_copy={}     #he
-    new_register=[]
-    # generate program
     dic_program = {}
-    #---hy update
+    dic_copy={}
+    new_register=[]
+    
+    # generate program
     totalList=[]
     determineList=[]
     #----hy update
@@ -447,44 +426,55 @@ def testing():
         dic_program[label] = program
 
 
-    #-----hy update-----
     c = copy.deepcopy(dic_program)
     
     # before
     register_dic = {'r0': 1.5, 'r1': 1.5, 'r2': 1.5, 'r3': 1.5, 'r4': 1.5}
-    
+    temp={}
     for label in c:
         program = c[label]
         a,pro_copy,goto_num=execute(program, len(program), register_dic)
+        temp[label]=pro_copy
+    pro_copy=temp
+  
+    set_jumps = opti2.get_goto_labels(pro_copy)
+    unreachable_labels = opti2.unreachable_label(set_jumps) #[L3, L4]
+    for label in unreachable_labels:
+        if label in pro_copy:
+            del pro_copy[label]
+    key_list = pro_copy.keys()
 
-        for elem in pro_copy:
-          totalList.append(elem) 
-          determineList.append(elem)   
-        determineList.append("stop here")
+    for elem in pro_copy:
+      for j in pro_copy[elem]:
+        totalList.append(j) 
+        determineList.append(j)   
+      determineList.append("stop here")
+
     pro,totalList=before_trans(totalList)
-    #print(pro,"\n\n",totalList)
-    # ---------update 4.5----------
-
-    # testing opti1 --------------------------------------------------------------
-    after_single_program,new_name = opti1.single_assign(totalList)#he 
+    
+    # ---------update 4.5----------he
+    # testing opti1 -------------------------------------------------
+    after_single_program,new_name = opti1.single_assign(totalList) 
     count=0
     start=0
     end=0
+
     for i in range(len(determineList)):
       if determineList[i]=="stop here":
-        label = "L" + str(count)
+        label = list(key_list)[count]
         end=i-count
         dic_copy[label]=after_single_program[start:end]
                
         count+=1
         start=i+1-count
         continue 
-    for i in new_name:          #he
+    for i in new_name:          
       new_register.append(i)
-      
-    for i in range(totalLabel): 
-      label = "L" + str(i)  
-      dic_copy[label] = opti1.optimization(dic_copy[label])#he
+    
+    for i in range(len(key_list)): 
+      label = list(key_list)[i]  
+
+      dic_copy[label] = opti1.optimization(dic_copy[label])
    #------------------------------------------------------------------------
 
       
@@ -493,6 +483,7 @@ def testing():
     opti2.general_constant_opti(dic_copy)
     opti2.general_sub_eliminate(dic_copy)
 
+    # print the program before and after the algorithm
     '''
     #print(dic_copy)
     print("\nOriginal Program:\n")              # hard copy
@@ -503,10 +494,9 @@ def testing():
         print(i + " " + str(dic_copy[i]) + "\n")
     '''
 
-
     # before
     register_dic = {'r0': 1.5, 'r1': 1.5, 'r2': 1.5, 'r3': 1.5, 'r4': 1.5}
-    exe_before = deleteLabel(c)
+    exe_before = deleteLabel(dic_program)
     for label in exe_before:
         program = c[label]
         execute(program, len(program), register_dic) # goto Label5        
@@ -525,11 +515,11 @@ def testing():
     #print("\nOptimiza result:", compare_dic)
 
 
-    before1, after1, r1 = result1(dic_program, dic_copy)
-    before2, after2, r2 = result2(dic_program, dic_copy)
+    before1, after1, r1 = result1(c, dic_copy)
+    before2, after2, r2 = result2(c, dic_copy)
     
-    rp1 = str(round(100-r1*100,2))+"%"
-    rp2 = str(round(100-r2*100,2))+"%"
+    rp1 = 100-r1*100#str(round(100-r1*100,2))+"%"
+    rp2 = 100-r2*100#str(round(100-r2*100,2))+"%"
     d1 = before1 - after1
     d2 = before2 - after2
 
@@ -539,20 +529,32 @@ def testing():
     return before1, after1, rp1, before2, after2, rp2, d1, d2, register_dic, compare_dic
     
           
-# show the results
+# show the results by tables
 def main():
 
+    # Result_Table1
     chart1 = [["The Reduction of Elements", "", "", "", ""],
               ["(change of the number of terms)", "", "", "", ""],
               ["","Length of Original Program", "Length of Optimized Program", "Length Difference", "Reduction Percentage"]]
-    
+
+    # Result_Table2
     chart2 = [["The Reduction of Instructions", "", "", "", ""],
               ["(change of the number of code lines)", "", "", "", ""],
               ["","Length of Original Program", "Length of Optimized Program", "Length Difference", "Reduction Percentage"]]
-    
+
+    # Function_Check_Table3
     chart3 = [["", "Register Assignment", "Comparison"]]
     
-    testing_number = 20 # modify here to change the number of testing cases 
+    testing_number = 20 # modify here to change the number of testing cases
+
+    rp1_list = []
+    rp2_list = []
+    length1_before = []
+    length2_before = []
+    length1_after = []
+    length2_after = []
+    d1_list = []
+    d2_list = []
     for i in range(testing_number):
         r1 = [] # length of elements
         r2 = [] # length of code lines
@@ -568,12 +570,12 @@ def main():
         r1.append(before1)
         r1.append(after1)
         r1.append(d1)
-        r1.append(rp1)
+        r1.append(str(round(rp1,2))+"%")
         
         r2.append(before2)
         r2.append(after2)
         r2.append(d2)
-        r2.append(rp2)
+        r2.append(str(round(rp2,2))+"%")
 
         r_before = process_register(re1)
         r_after = process_register(re2)
@@ -584,16 +586,37 @@ def main():
         r4.append(r_after)
         r4.append("")
 
+        rp1_list.append(rp1)
+        rp2_list.append(rp2)
+        length1_before.append(before1)
+        length2_before.append(before2)
+        length1_after.append(after1)
+        length2_after.append(after2)
+        d1_list.append(d1)
+        d2_list.append(d2)
+
         chart1.append(r1)
         chart2.append(r2)
         chart3.append(r3)
         chart3.append(r4)
-        
+
+    avrg_rp1 = str(round(1.0*sum(rp1_list)/len(rp1_list),2))+"%"
+    avrg_rp2 = str(round(1.0*sum(rp2_list)/len(rp2_list),2))+"%"
+    avrg1_before = str(round(1.0*sum(length1_before)/len(length1_before),2))
+    avrg2_before = str(round(1.0*sum(length2_before)/len(length2_before),2))
+    avrg1_after = str(round(1.0*sum(length1_after)/len(length1_after),2))
+    avrg2_after = str(round(1.0*sum(length2_after)/len(length2_after),2))
+    avrg1_d = str(round(1.0*sum(d1_list)/len(d1_list),2))
+    avrg2_d = str(round(1.0*sum(d2_list)/len(d2_list),2))
+    
+
+    chart1.append(["Average", avrg1_before, avrg1_after, avrg1_d, avrg_rp1])
+    chart2.append(["Average", avrg2_before, avrg2_after, avrg2_d, avrg_rp2])
 
     chart("Result_Table1.csv", chart1)
     chart("Result_Table2.csv", chart2)
     chart("Function_Check_Table3.csv", chart3)
-    print("The results are in the table The_Reduction_of_Total_Elements.csv and The_Reduction_of_Instructions.csv")
+    print("\nThe results are displayed in:\nResult_Table1.csv,\nResult_Table2.csv\nFunction_Check_Table3.csv")
 
 main()
 
